@@ -1,6 +1,7 @@
 ---
 title: "In class assignment week 2, part 2. A worked example using control flow (for loops, if statements, etc)"
 author: "Ian Dworkin"
+editor: "Garrett Nunn"
 output: 
   html_document:
     keep_md: yes
@@ -19,22 +20,66 @@ read_3  <- "CAGCACGGACTGGGGCTTCTTGCCGGCGAGGACCTTCTTCTTGGCATCCTTGCTCTTGGCCTTGGCGG
 ```
 
 Question 1. what species are these sequences from?
+1 - Drosophila melanogastor
+2 - Dm as well 
+3 - Same
 
 Question 2. Put all three of these reads into a single object (a vector).  What class will the vector `reads` be? Check to make sure! How many characters are in each read (and why does `length()` not give you what you want.. try...)
+```{r}
+reads = c(read_1, read_2, read_3)
+length(reads)
+nchar(reads)
+```
+Because length is giving you the length of the list
 
 Question 3. Say we wanted to print each character (not the full string) from read_1, how do we do this using a for loop? You may wish to look at a function like `strsplit()` to accomplish this (there are other ways.)
 
 Replace the blanks.
 ```{r}
-read_1_split <- strsplit(___, split = ___, fixed = T) 
+read_1_split <- strsplit(read_1, split = "", fixed = T)
+splitReads =strsplit(reads, split = "", fixed = T)
+for (char in read_1_split[[1]]){
+  print(char)
+}
 ```
 
 Question 4. What kind of object does this return? How might we make it a character vector again?
-
+  It returns a character object of length 1.
+```{r}
+rebuilt = as.character(read_1_split[[1]])
+```
 Question 5. How about if we wanted the number of occurrences of each base? Or better yet, their frequencies? You could write a loop, but I suggest looking at the help for the `table()` function... Also keep in mind that for for most objects `length()` tells you how many elements there are in a vector. For lists use `lengths()` (so you can either do this on a character vector or a list, your choice)
+```{r}
+freq = table(rebuilt)
+freq[] = freq[]/length(rebuilt)
+
+```
 
 Question 6. How would you make this into a nice looking function that can work on either  a list or vectors of characters? (Still just for a single read)
+```{r}
+countFreq = function(input){
+  freq <- as.character(strsplit(input, split = "", fixed = T)[[1]])
+  freq = table(freq)/length(freq)
+  return(freq)
+}
+countFreq(read_1)
+```
 
 Question 7. Now how can you modify your approach to do it for an arbitrary numbers of reads? You could use a loop or use one of the apply like functions (which one)?
+```{r}
+countFreqs = function(input){
+  freqs=list()
+  for(i in 1:length(input)){
+    freq <- as.character(strsplit(input[i], split = "", fixed = T)[[1]])
+    freq = table(freq)/length(freq)
+    freqs= cbind(freqs,freq)
+    colnames(freqs)[i]=i
+  }
+  return(freqs)
+}
+countFreqs(reads)
+```
+Question 8. Can you revise your function so that it can handle the input of either a string as a single multicharacter vector, **or** a vector of individual characters **or** a list? Try it out with the vector of three sequence reads (`reads`).
 
-Question 8. Can you revise your function so that it can handle the input of either a string as a single multicharacter vector, **or** a vector of individual characters **or** a list? Try it out with the vector of three sequence reads (`reads`).  
+You Finished this in class for us. Basically just sapply my countFreq function
+
