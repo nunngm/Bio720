@@ -1,0 +1,90 @@
+---
+title: "Garrett's awesomely completed perfectly on time this time Assignment 3"
+output: html_document
+---
+Fun time tracking stuff because I'm a nerd (and I thought you might find it useful): DataCamp = 2h55min; Questions 2-8: 2h53min. How symetrical!
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Question 2:
+```{r}
+setwd("C:/Users/garre/Documents/GitHub/Bio720/assignments")
+rnaCounts = read.csv("rna_counts.csv", header=T, row.names = 1)
+colMean = function(column, logThis = F){
+  if (logThis == T){
+    column = log2(column)
+  }
+  condition = is.finite(column)
+  mean(column[condition])
+}
+c(colMean(rnaCounts[,1]),colMean(rnaCounts[,2]))
+colMean(rnaCounts[,1], logThis=T)
+```
+Question 3:
+```{r}
+everyMean = double(ncol(rnaCounts))
+for (i in seq_along(rnaCounts)){
+  everyMean[i] = colMean(rnaCounts[,i])
+  names(everyMean)[i] = colnames(rnaCounts)[i]
+}
+everyMean
+```
+I noticed that the wings had the most RNA counts on average
+
+Question 4:
+```{r}
+everyMean = double(ncol(rnaCounts))
+everyMean = sapply(rnaCounts, colMean,logThis=T)
+
+system.time(sapply(rnaCounts, colMean))[3]
+system.time(for (i in seq_along(rnaCounts)){
+  everyMean[i] = colMean(rnaCounts[,i])
+  names(everyMean)[i] = colnames(rnaCounts)[i]})[3]
+```
+lapply was 0 elapsed time and the for loop had a longer time at 0.02
+
+Question 5:
+```{r}
+geneMeans= colMeans(rnaCounts)
+```
+Question 6:
+```{r}
+geneMeans = rowMeans(rnaCounts)
+```
+Question 7:
+```{r}
+myColumns = colnames(rnaCounts)
+myColumns = strsplit(myColumns, split = "_")
+
+justMaleHeads = function(x,arg2 = NA){
+  y = x[3]=="male"&&x[4]=="hdhorn"
+  if (is.na(arg2)==F){
+    y = y&&x[2]==arg2
+  }
+  y
+}
+rc2 = rnaCounts[sapply(myColumns,justMaleHeads)]
+geneMeans =rowMeans(rc2)
+lg = rnaCounts[sapply(myColumns, justMaleHeads, arg2="lg")]
+sm = rnaCounts[sapply(myColumns, justMaleHeads, arg2="sm")]
+meanDiff = mean(rowMeans(lg)-rowMeans(sm))
+```
+
+Question 8:
+```{r}
+library(ggplot2)
+help = rowMeans(rnaCounts)
+me = help - mean(help)
+help_me= data.frame(help,me)
+ggplot(help_me, aes(x = help, y = me))+
+  geom_point()
+
+rnaLog = rnaCounts + 0.1
+rnaLog = log2(rnaLog)
+help = rowMeans(rnaLog)
+me = help - mean(help)
+help_me= data.frame(help,me)
+ggplot(help_me, aes(x = help, y = me))+
+  geom_point()
+```
