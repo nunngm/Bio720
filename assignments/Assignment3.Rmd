@@ -1,6 +1,6 @@
 ---
 title: "Garrett's awesomely completed perfectly on time this time Assignment 3"
-output: html_document
+output: md_document
 ---
 Fun time tracking stuff because I'm a nerd (and I thought you might find it useful): DataCamp = 2h55min; Questions 2-8: 2h53min. How symetrical!
 ```{r setup, include=FALSE}
