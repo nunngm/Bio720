@@ -78,14 +78,14 @@ Question 4:
     system.time(sapply(rnaCounts, colMean))[3]
 
     ## elapsed 
-    ##       0
+    ##    0.02
 
     system.time(for (i in seq_along(rnaCounts)){
       everyMean[i] = colMean(rnaCounts[,i])
       names(everyMean)[i] = colnames(rnaCounts)[i]})[3]
 
     ## elapsed 
-    ##    0.01
+    ##       0
 
 lapply was 0 elapsed time and the for loop had a longer time at 0.02
 
@@ -111,27 +111,27 @@ Question 7:
     }
     rc2 = rnaCounts[sapply(myColumns,justMaleHeads)]
     geneMeans =rowMeans(rc2)
-    lg = rnaCounts[sapply(myColumns, justMaleHeads, arg2="lg")]
-    sm = rnaCounts[sapply(myColumns, justMaleHeads, arg2="sm")]
-    meanDiff = mean(rowMeans(lg)-rowMeans(sm))
+    lg = rowMeans(rnaCounts[sapply(myColumns, justMaleHeads, arg2="lg")])
+    sm = rowMeans(rnaCounts[sapply(myColumns, justMaleHeads, arg2="sm")])
+    meanDiff = lg-sm
 
 Question 8:
 
     library(ggplot2)
-    help = rowMeans(rnaCounts)
-    me = help - mean(help)
-    help_me= data.frame(help,me)
-    ggplot(help_me, aes(x = help, y = me))+
-      geom_point()
+
+    df = data.frame(meanDiff,lg,sm)
+    ggplot(df, aes(y=meanDiff)) + geom_point(aes(x=lg), color="red") + geom_point(aes(x=sm), color = "green") +labs(x ="Mean Gene Expression", y = "Difference in Mean Gene Expression")
 
 ![](Assignment3_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
     rnaLog = rnaCounts + 0.1
     rnaLog = log2(rnaLog)
-    help = rowMeans(rnaLog)
-    me = help - mean(help)
-    help_me= data.frame(help,me)
-    ggplot(help_me, aes(x = help, y = me))+
-      geom_point()
+    lg = rowMeans(rnaLog[sapply(myColumns, justMaleHeads, arg2="lg")])
+    sm = rowMeans(rnaLog[sapply(myColumns, justMaleHeads, arg2="sm")])
+    meanDiff = lg-sm
+
+
+    df = data.frame(meanDiff,lg,sm)
+    ggplot(df, aes(y=meanDiff)) + geom_point(aes(x=lg), color="red") + geom_point(aes(x=sm), color = "green") +labs(x ="Mean Gene Expression", y = "Difference in Mean Gene Expression")
 
 ![](Assignment3_files/figure-markdown_strict/unnamed-chunk-7-2.png)
