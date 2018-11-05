@@ -1,17 +1,39 @@
-# Bio720_DataMunging
-Ian Dworkin  
-October 31, 2016  
+---
+title: "Bio720_DataMunging"
+author: "Ian Dworkin"
+date: "November 5th, 2018"
+output: 
+  html_document: 
+    keep_md: yes
+    number_sections: yes
+    toc: yes
+---
 
 
+# Data parsing and munging in Base R
 
 ## Brief introduction
 One of the most common "programming" activities you will do in genomics and bioinfomatics is to get the data into a format that facilitates (and makes possible) the analyses you are doing. This activity can often occupy very large amounts of your time
 
 These activities have many names: *wrangling data, munging data, cleaning data, data manipulation*. Given how important this is, it will come as no surprise that there are entire R libraries devoted to it. There are several lists that are worth looking at like [here](http://datascienceplus.com/best-packages-for-data-manipulation-in-r/) and [here](https://www.analyticsvidhya.com/blog/2015/12/faster-data-manipulation-7-packages/). Also, books like [Data Manipulation with R](https://www.amazon.ca/Data-Manipulation-R-Phil-Spector/dp/0387747303)!
 
+## Why no tidyverse in this tutorial
+You have already been introduced to a little bit of the use of the *dplyr* library and verbs within it like `filter()`, `arrange()`, `group_by()` and `summarize()` (one other important one is `select()`). You will have more opportunities to learn aspects of the tidyverse (more on dplyr and ggplot2 in particular). However, today I am not going to show you data munging this way, instead relying on base R techniques.
+
+Why? tidyverse libraries are excellent in many ways, *but* they do have some issues. First and foremost, there are lots of dependencies (so if you load library "a", you also need libraries "b", "c", "d", etc). That can add a lot of libraries potentially. Second, unlike base R where the code is very (probably too) conservative, and those that maintain and alter the code do so in a manner that is very unlikely to alter downstream behaviour (i.e. code in other libraries), tidyverse libraries change more rapidly (and thus, while still very unlikely are more likely to break existing code). 
+
+Currently, *[Bioconductor](http://bioconductor.org/)* objects don't always "play nice" with tidyverse tibbles and approaches. These are essentially two independently evolving "ecosystems of syntax" (really macro languages) in *R*. There is a move to integrate these better. But at this time, if you are planning on using libraries from *Bioconductor* for genomic and bioinformatic analysis it is important to know how to work with data in base R.
+
+It is worth thinking about when to use tidyverse, and when not to.
+
+If you are writing scripts that are just for your own data analysis (i.e. you are not writing a general purpose library) and are not interacting with *Bioconductor* objects too much (or don't mind altering objects from one to the other), then the *tidyverse* is an extremely smart choice. Fast to learn, relatively consistent (in comparison to Base *R*), and often faster than base *R*.
+
+## *data.table* library for fast import and execution of large data sets.
+Finally it is worth pointing out that the *data.table* library is not only the most efficient for importing large data sets (by a wide margin usually), but data munging (sorting, subsetting, etc..) can also be done via this library with its own syntax. For large datasets, this is usually the fastest. Datacamp has a course on this [here](https://www.datacamp.com/courses/data-table-data-manipulation-r-tutorial). Like `readr` and *tibbles* in tidyverse, the `data.table` is a slightly different object from a standard `data.frame`. If you are working with large datasets in `R`, knowing this library is essential! 
+
 ## for your own review
 
-We have already spent considerable time in previous tutorials making data frames using cbind, rbind, data.frame, etc.. As we have limited time in class I leave review of that to you from the screencasts and activites at datacamp.
+We have already spent considerable time in previous tutorials making data frames using `cbind`, `rbind`, `data.frame`, etc.. As we have limited time in class I leave review of that to you from the screencasts and activites at datacamp.
 
 ## install packages.
 You may wish to install certain `R` libraries that get used a lot. While R-studio has a number of easy ways to install libraries I still prefer having it in the script. You only need to install the libraries once, although it is worth updating them regularly, and I re-install them everytime I update `R`.
@@ -22,9 +44,9 @@ You may wish to install certain `R` libraries that get used a lot. While R-studi
 #install.packages("data.table")
 ```
 
-## Data
+## Data we are using.
 
-We will use a number of different data sets to illustrate each of the points, but for the main one, we will use an old *Drosophila melanogaster* data set measuring several traits (lengths) and the number of sex comb teeth (a structure used to clasp females during copulation) for different wild type strains (line) reared at different developmental temperatures, with and without a mutation that effects proximal-distal axis development in limbs (genotype)
+We will use a number of different data sets to illustrate each of the points, but for the main one, we will use an old *Drosophila melanogaster* data set measuring several traits (lengths) and the number of sex comb teeth (a structure used to clasp females during copulation) for different wild type strains (line) reared at different developmental temperatures, with and without a mutation that effects proximal-distal axis development in limbs (genotype). Note that we are downloading the data from a data repository (Dryad). If you really care, it is from [this](https://www.ncbi.nlm.nih.gov/pubmed/15733306) paper.
 
 
 
@@ -96,6 +118,7 @@ head(dll_data)
 ## 5         1 line-1      Dll   25 0.596 0.502  0.207  12
 ## 6         1 line-1      Dll   25 0.577 0.499  0.207  14
 ```
+- Since we are using base *R*, this is a regular data.frame.
 
 ## Cleaning data
 ### removing missing data
@@ -120,7 +143,18 @@ head(is.na(dll_data))
 ```
 
 ```r
-# or more easily
+sum(is.na(dll_data))
+```
+
+```
+## [1] 85
+```
+So there are rows that contain missing data somewhere. 
+
+
+More generally we can ask:
+
+```r
 anyNA(dll_data)
 ```
 
@@ -128,6 +162,28 @@ anyNA(dll_data)
 ## [1] TRUE
 ```
 
+### Why missing data can cause headaches
+
+```r
+mean(dll_data$femur)
+```
+
+```
+## [1] NA
+```
+- Since there is some missing data, the `mean()` function defaults to NA, to warn you. This is a useful behaviour.
+
+
+```r
+mean(dll_data$femur, na.rm = TRUE)
+```
+
+```
+## [1] 0.546
+```
+
+
+### What to do with this rows with missing data
 We need to decide what to do with the missing data. If you have lots of data, and do not mind removing all cases (rows) that contain **any** missing data then `na.omit` is a useful solution.
 
 
@@ -149,15 +205,21 @@ dim(dll_data_complete)
 ## [1] 1918    8
 ```
 
+This has caused us to remove 55 observations. It may be useful to instead look at where the missing data is contained and maybe make a subsetted data set based on that. There are numerous options about how `R` should handle operations if an `NA` is found. You can look at the help under `?NA`. 
 
-This has caused us to remove 50 observations. It may be useful to instead look at where the missing data is contained and maybe make a subsetted data set based on that. There are numerous options about how `R` should handle operations if an `NA` is found. You can look at the help under `?NA`. 
 
-For the moment, we are going to accept the approach above, and use it
+For the moment, we are going to accept the approach above, and use it. However, I don't generally recommend this. Instead, you can first subset the variables you are going to use, and then decide how to deal with the missing data. Or you can allow them into your analysis, but make sure to set the right flags in functions that enable them to deal with missing data.
 
 
 ```r
 dll_data <- na.omit(dll_data)
+mean(dll_data$femur)
 ```
+
+```
+## [1] 0.546
+```
+- Note that the mean now is not the same as before. This is because additional variables (not just femur) had missing data for different observations, but we removed any observation with any missing data!
 
 ### finding and removing duplicate rows in a data frame.
 The `duplicated()` allows you to see which, if any rows are perfect duplicates of one another.
@@ -213,7 +275,21 @@ anyDuplicated(dll_data)
 ```
 ## [1] 0
 ```
-So for this example there were no duplicate rows. However let's say an accident happened in generating the data set and a few rows were duplicated. I am going to use the `sample()` function to extract 5 random rows.
+So for this example there was one duplicate rows.
+
+
+```r
+dll_data[anyDuplicated(dll_data),]
+```
+
+```
+## [1] replicate line      genotype  temp      femur     tibia     tarsus   
+## [8] SCT      
+## <0 rows> (or 0-length row.names)
+```
+Which in this case, is because there is so much missing data for this observation, and only one variable (SCT) had actually data for a discrete value. So it is likely real.
+
+However let's say an accident happened in generating the data set and a few rows were duplicated. I am going to use the `sample()` function to extract 5 random rows.
 
 
 ```r
@@ -233,11 +309,11 @@ str(dll_data2)
 ##  $ tibia    : num  0.499 0.501 0.488 0.502 0.499 ...
 ##  $ tarsus   : num  0.219 0.214 0.211 0.207 0.207 ...
 ##  $ SCT      : int  9 13 11 12 14 11 12 10 12 13 ...
-##  - attr(*, "na.action")=Class 'omit'  Named int [1:55] 4 61 73 92 93 142 207 268 315 319 ...
-##   .. ..- attr(*, "names")= chr [1:55] "4" "61" "73" "92" ...
+##  - attr(*, "na.action")= 'omit' Named int  4 61 73 92 93 142 207 268 315 319 ...
+##   ..- attr(*, "names")= chr  "4" "61" "73" "92" ...
 ```
 
-Now you don't know which rows, they are.  Please show how you would find whether there are any duplicated rows, and which ones they are
+Now you don't know which rows, they are.  Please show how you would find whether there are any duplicated rows, and which ones they are using `duplicated()`
 
 ```r
 any(duplicated(dll_data2))
@@ -253,14 +329,14 @@ dll_data2[duplicated(dll_data2),]
 
 ```
 ##       replicate      line genotype temp femur tibia tarsus SCT
-## 16511         1   line-18       wt   30 0.496 0.445  0.167  10
-## 5931          1   line-18       wt   25 0.535 0.473  0.194   9
-## 19671         1    line-w       wt   30 0.544 0.495  0.181  12
-## 4641          2    line-1       wt   25 0.562 0.486  0.170   9
-## 10001         1 line-OreR       wt   25 0.582 0.476  0.200   9
+## 14351         1 line-OreR      Dll   30 0.559 0.474  0.166   8
+## 11781         1   line-18      Dll   30 0.496 0.440  0.165   8
+## 4831          1   line-11       wt   25 0.518 0.484  0.193  12
+## 8271          2    line-3       wt   25 0.552 0.471  0.190  10
+## 12281         1    line-2      Dll   30 0.490 0.423  0.166   8
 ```
 
-So what should we do? We can use the `unique()` to remove these duplicated rows
+So what should we do? We can use the `unique()` to remove these duplicated rows if we know for certain that they do not belong in the data set (i.e. they are duplicated in error).
 
 
 ```r
@@ -317,8 +393,8 @@ str(dll_data)
 ##  $ tibia    : num  0.499 0.501 0.488 0.502 0.499 ...
 ##  $ tarsus   : num  0.219 0.214 0.211 0.207 0.207 ...
 ##  $ SCT      : int  9 13 11 12 14 11 12 10 12 13 ...
-##  - attr(*, "na.action")=Class 'omit'  Named int [1:55] 4 61 73 92 93 142 207 268 315 319 ...
-##   .. ..- attr(*, "names")= chr [1:55] "4" "61" "73" "92" ...
+##  - attr(*, "na.action")= 'omit' Named int  4 61 73 92 93 142 207 268 315 319 ...
+##   ..- attr(*, "names")= chr  "4" "61" "73" "92" ...
 ```
 
 As we can see there are two genotypes. Let's say we wanted to make a data frame (`dll_data_wt`) that was a subset with only the wild type (`wt`) data? How would you do this with the index?
@@ -350,6 +426,8 @@ nrow(dll_data_wt)
 ## [1] 1077
 ```
 
+So it seems like it is working.
+
 ### subsetting on factors and removing unused levels.
 
 So that seems to match. We should only have one level now in `genotype`. Let's check.
@@ -363,7 +441,9 @@ levels(dll_data_wt$genotype)
 ## [1] "Dll" "wt"
 ```
 
-So what is going on? We know we only have the correct number of observations associated, but it still has the level `Dll` in the factor genotype, why? Because of the way it has been stored, each of these levels is still associated as part of `genotype`. Thankfully it is very easy to fix.
+So what is going on? 
+
+We know we only have the correct number of observations associated, but it still has the level `Dll` in the factor genotype, why? Because of the way it has been stored, each of these levels is still associated as part of `genotype`. Thankfully it is very easy to fix. Use the `droplevels()` to drop unused levels.
 
 
 ```r
@@ -377,7 +457,7 @@ levels(dll_data_wt$genotype)
 
 ### using the subset function
 
-Of course the easiest alternative is to use the `subset` function we introduced a few weeks back. Please use this to make a data frame for the `Dll` factor level of genotype and check what has happened to the `wt` factor level. 
+Of course the easiest alternative is to use the `subset` function we introduced a few weeks back. Please use this to make a data frame (`dll_data_Dll`) for the *Dll* factor level of genotype and check what has happened to the *wt* factor level. 
 
 
 
@@ -427,9 +507,11 @@ dim(dll_data_Dll)
 ## [1] 841   4
 ```
 
-### the `%in%` matching operator can be very useful for finding things in your data set to work on.
+### the `%in%` matching operator 
 
-The `%in%` is a matching operator (also see `match()`) that returns a boolean (TRUE or FALSE). This can be really useful to find things. Here we will go ahead and find all instances where a couple of the lines are in the data set.
+`%in%` can be very useful for finding things in your data set to work on.
+
+The `%in%` is a matching operator (also see `match()`) that returns a boolean (TRUE or FALSE). This can be really useful to find things. Go ahead and find all instances where a couple of the lines `c("line-Sam", "line-1")` are in the data set `dll_data$line`. I recommend first creating a dummy logical variable that can be used to filter via the index`[]`.
 
 
 ```r
@@ -451,7 +533,7 @@ dim(dll_data_new_subset)
 ```
 
 
-### Clean up
+### Clean up before moving on.
 let's remove the data frames we are not using.
 
 
@@ -492,7 +574,7 @@ str(line_str)
 ```
 
 ```
-##  chr [1:1918] "line-1" "line-1" "line-1" "line-1" "line-1" ...
+##  chr [1:1918] "line-1" "line-1" "line-1" "line-1" "line-1" "line-1" ...
 ```
 
 ```r
@@ -503,7 +585,7 @@ head(line_str)
 ## [1] "line-1" "line-1" "line-1" "line-1" "line-1" "line-1"
 ```
 
-Now we can use `substr()`
+Now we can use `substr()`. It is by position.
 
 
 ```r
@@ -529,7 +611,7 @@ In this case, since the strings we want to keep start at different positions in 
 
 
 ### `strsplit()`
-An alternative way to do this is to use the fact that we (purposefully) used a delimiter character to seperate parts of the name. In this case we used the "-" to seperate the word "line" from the actual line name we car about. As such we can use a second function that can be very valuable, `strsplit()`.
+An alternative way to do this is to use the fact that we (purposefully) used a delimiter character to seperate parts of the name. In this case we used the "-" to seperate the word "line" from the actual line name we car about. As such we can use a second function that can be very valuable, `strsplit()`. Use `strsplit` to create a new object splitting on the "-"
 
 
 ```r
@@ -599,7 +681,7 @@ Which would be ID = Ian Dworkin (initials), GBE = project name, SAM is line name
 
 Many times however, there is no consistent delimiter like "-", nor can we assume the variable name we want is in a particular part of the string. So sometimes we need to utilize some simple regular expressions. `R` has a number of useful regular expression tools in the `base` library (`gsub`, `grep`, `grepl`, etc ). I suggest using `?grep` to take a deeper look. Here we will encounter just a few.
 
-`sub()` and `gsub()` are functions that perform replacements for the first match or globally (g) for all matches respectively. If we go back to the names of the original lines, we will see they all have `line-` in common, so perhaps we can search and replace based on that pattern. This is quite easy as well.
+`sub()` and `gsub()` are functions that perform replacements for the first match or globally (g) for all matches respectively. If we go back to the names of the original lines, we will see they all have `line-` in common, so perhaps we can search and replace based on that pattern. This is quite easy as well. use `gsub` to extract just the line name without the first part of the string, "line-"
 
 
 ```r
@@ -607,7 +689,7 @@ str(line_str)
 ```
 
 ```
-##  chr [1:1918] "line-1" "line-1" "line-1" "line-1" "line-1" ...
+##  chr [1:1918] "line-1" "line-1" "line-1" "line-1" "line-1" "line-1" ...
 ```
 
 ```r
@@ -666,7 +748,7 @@ Say we wanted to call the "sam" line by its proper name "Samarkand". How could w
 line_names3 <- sub("sam", "SAMARKAND", line_names3)
 ```
 
-#### Clean up
+#### Clean up before moving on.
 rm(line_names2, line_names3, line_names, line_names2_mat, line_str, new_rows)
 
 ### renaming variables, factors etc..
@@ -683,6 +765,8 @@ str(dll_data$temp)
 ```
 
 However we might want to treat this as a factor. Also your PI has decided they want you to encode it at "HighTemp" and "LowTemp". So you have decided to create a new variable to do so. Not surprisingly, you have a few different ways to do this. The most obvious (and what you have done before) is to generate a factor. You can make the variable part of the data frame object, but I am going to keep it seperate for now.
+
+Use the `factor()` function to generate a new variable `temp_as_factor` with factor labels "LowTemp", "HighTemp".
 
 
 ```r
@@ -717,7 +801,7 @@ tail(temp_as_factor)
 
 ### Using ifelse()
 
-An alternative approach would be to use the `ifelse()` function.
+An alternative approach would be to use the `ifelse()` function. Create a new variable (that achieves the same thing) using `ifelse()`
 
 
 ```r
@@ -771,7 +855,7 @@ tail(order(dll_data$SCT))
 ```
 ## [1] 1068 1283 1284 1336   60 1430
 ```
-Provides the row numbers. We can use this to sort via the *index*.
+Provides the row numbers. We can use this to sort via the *index*. Use the `order()` to sort the dll_data frame into a new object (dll_data_sorted) based on dll_data$SCT.
 
 
 ```r
@@ -794,7 +878,7 @@ How would you sort on tibia?
 
 ### sorting from highest to lowest
 
-So this by default sorts from lowest to highest. Use the help function for `order` and sort the data from highest to lowest
+So this by default sorts from lowest to highest. Use the help function for `order` and sort the data from highest to lowest.
 
 
 ```r
@@ -814,7 +898,7 @@ head(dll_data_sorted)
 
 ### Sorting on multiple different columns. 
 
-This is a natural extension of what we have already done.
+This is a natural extension of what we have already done. Sort first on *SCT*, then on *temp*
 
 
 ```r
@@ -915,7 +999,7 @@ str(elevation_data)
 ## 'data.frame':	27 obs. of  3 variables:
 ##  $ line           : Factor w/ 27 levels "line-1","line-11",..: 1 2 3 4 5 6 7 8 9 10 ...
 ##  $ elevations     : num  100 300 270 250 500 900 500 1100 500 3000 ...
-##  $ MeanDayTimeTemp: num  27.2 21.8 20.6 27.7 15.6 ...
+##  $ MeanDayTimeTemp: num  22.4 15.7 24.1 17.5 29.6 ...
 ```
 
 Now we can merge the data
@@ -935,12 +1019,12 @@ head(merged_data)
 
 ```
 ##     line elevations MeanDayTimeTemp replicate genotype temp femur tibia
-## 1 line-1        100            27.2         1      Dll   25 0.590 0.499
-## 2 line-1        100            27.2         1      Dll   25 0.550 0.501
-## 3 line-1        100            27.2         1      Dll   25 0.588 0.488
-## 4 line-1        100            27.2         1      Dll   25 0.596 0.502
-## 5 line-1        100            27.2         1      Dll   25 0.577 0.499
-## 6 line-1        100            27.2         1      Dll   25 0.618 0.494
+## 1 line-1        100            22.4         1      Dll   25 0.590 0.499
+## 2 line-1        100            22.4         1      Dll   25 0.550 0.501
+## 3 line-1        100            22.4         1      Dll   25 0.588 0.488
+## 4 line-1        100            22.4         1      Dll   25 0.596 0.502
+## 5 line-1        100            22.4         1      Dll   25 0.577 0.499
+## 6 line-1        100            22.4         1      Dll   25 0.618 0.494
 ##   tarsus SCT line_names
 ## 1  0.219   9          1
 ## 2  0.214  13          1
@@ -956,12 +1040,12 @@ tail(merged_data)
 
 ```
 ##        line elevations MeanDayTimeTemp replicate genotype temp femur tibia
-## 1913 line-w        600            18.2         1       wt   30 0.544 0.495
-## 1914 line-w        600            18.2         1       wt   30 0.507 0.480
-## 1915 line-w        600            18.2         1       wt   30 0.528 0.485
-## 1916 line-w        600            18.2         1       wt   30 0.545 0.486
-## 1917 line-w        600            18.2         1       wt   30 0.542 0.504
-## 1918 line-w        600            18.2         1       wt   30 0.511 0.469
+## 1913 line-w        600            21.5         1       wt   30 0.544 0.495
+## 1914 line-w        600            21.5         1       wt   30 0.507 0.480
+## 1915 line-w        600            21.5         1       wt   30 0.528 0.485
+## 1916 line-w        600            21.5         1       wt   30 0.545 0.486
+## 1917 line-w        600            21.5         1       wt   30 0.542 0.504
+## 1918 line-w        600            21.5         1       wt   30 0.511 0.469
 ##      tarsus SCT line_names
 ## 1913  0.181  12          w
 ## 1914  0.181  10          w
@@ -999,7 +1083,7 @@ head(dll_data)
 
 Make a new variable based on genotype for `geneY = c(200, 500)`.
 
-#### Clean up
+#### Clean up for next part.
 
 ```r
 rm(elevation_data, elevations, MeanDayTimeTemp, temp_as_factor, dll_data_sorted, geneXpression, temp_as_factor2, line_names, stuff, merged_data)
@@ -1014,7 +1098,7 @@ rm(elevation_data, elevations, MeanDayTimeTemp, temp_as_factor, dll_data_sorted,
 
 There are often times when your data is in a format that is not appropriate for the analyses you need to do. In particular sometimes you need each variable (say each gene whose expression you are monitoring) in its own column (so called *wide* format). Sometimes it is best to have a single column for gene expression, with a second column indexing which gene the measure of expression is for. i.e. all expression data is in a single column, and thus each row has a single measure, but the number of rows will be equal to the number of samples multiplied by the number of genes (lots of rows!!). This is called the *long* format.
 
-This is such a common operation that `R` has a function `reshape()` to do this. Unfortunately (but perhaps well deserved), the arguments and argument names for the `reshape()` function are not so intuitive. Thus while I give an example of it below, this is one of those cases that using an additional package (like `reshape2` or `tidyr`) may be a worthwhile investment in time. 
+This is such a common operation that `R` has a function `reshape()` to do this. Unfortunately (but perhaps well deserved), the arguments and argument names for the `reshape()` function are not so intuitive. Thus while I give an example of it below, this is one of those cases that using an additional package (like `reshape2` or `tidyr`) may be a worthwhile investment in time. Indeed `gather` and `spread` are really straightforward in *tidyr*
 
 ### `reshape()` function in `R`
 Let's take a quick look at our data again:
@@ -1194,8 +1278,8 @@ str(dll_data)
 ##  $ SCT       : int  9 13 11 12 14 11 12 10 12 13 ...
 ##  $ line_names: Factor w/ 27 levels "1","11","12",..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ subject   : chr  "1" "2" "3" "4" ...
-##  - attr(*, "na.action")=Class 'omit'  Named int [1:55] 4 61 73 92 93 142 207 268 315 319 ...
-##   .. ..- attr(*, "names")= chr [1:55] "4" "61" "73" "92" ...
+##  - attr(*, "na.action")= 'omit' Named int  4 61 73 92 93 142 207 268 315 319 ...
+##   ..- attr(*, "names")= chr  "4" "61" "73" "92" ...
 ```
 
 What if we wanted to combine these two variables together into a meta-variable? There are a few good options. One is to use paste of course
@@ -1220,7 +1304,7 @@ str(meta_variable)
 ```
 
 ```
-##  chr [1:1918] "Dll:25" "Dll:25" "Dll:25" "Dll:25" "Dll:25" ...
+##  chr [1:1918] "Dll:25" "Dll:25" "Dll:25" "Dll:25" "Dll:25" "Dll:25" ...
 ```
 Note: you get to choose the character to use as a seperator. ":", "." and "_" are very common!
 
