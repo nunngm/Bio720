@@ -1,0 +1,86 @@
+---
+title: "Visualizing Data"
+author: "Garrett Nunn"
+date: "November 18, 2018"
+output:
+  html_document:
+    keep_md: yes
+    number_sections: yes
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(MASS)
+library(lattice)
+```
+#Data Visualization
+Exploratory Visualizations are for data analysis so you want to be able to see as much information as possible in a meaningful way.
+
+Explantory visualizations are for when you haev already found the relavent data and would like to show it to someone else.
+* Base graphics is the basic graphics plotting software in R
+* Grid graphics is a more complicated version of this
+* ggplot2 is for scrubs but is based off the grid graphics system
+
+Base Graphics:
+```{r}
+plot(xVar, yVar,xlab = "label of x axis", ylab = "y axis label", main= "Title")
+title("Title of the Plot")
+```
+Grid:
+* Basically used by people who make r packages
+Lattice:
+* Makes it very easy to make a conditional scatterplot
+```{r}
+xyplot(yVar ~ xVar |conditionalVar, data = data)
+```
+*Other plots:*
+There are also different kind of plots in Base such as:
+  *'sunflowerplot()' shows an additional petal for every value at the same point in the graph. Useful when data points are repeated
+  *'boxplot()' useful for seeing distribution over a given y value and either a few x values or categories
+  *'mosaicplot()' shows a mosaice plot
+*Base Plot can also be enhanced*
+  * 'points()' adds points to the plot
+  * 'lines()' adds lines that are usually curved
+  * 'text()' adds labels
+  * 'par()' allows you to set-up multiple plot arrays
+A good general rule of thumb is pie charts are bad
+
+##Characterizing a single variable
+Numerical data should general conform to a gaussian distribution. The spread is the stdev.
+* Histogram is just a grouping of number of things in each bin
+* Density estimate should look like a bell curve roughly. Basically a smoothed histogram
+* Normal QQ-plot sorted points should be close to the solid line if the data is gaussian distribution
+
+##Histograms
+* 'hist()' is a function that puts numerical values into bins and shows you the number frequency of them
+* 'truehist()' is similar to 'hist()' but instead shows each bins approximate estimate
+
+##Characterizing the relationship between two variables
+* Scatterplots do this 'plot(yVar~xVar, data = mydata)'
+* Sunflower plots do this as well
+* When few x values, use a boxplot
+* Mosaicplot when you have a ton of repeated data points
+*More complex relationships*
+* Bagplots shows a 2D version of distribution for two variables
+* Correlation coefficient is the relation between numerical varibales and is between -1 and +1
+  + corrplot() shows this relation across the entire dataset
+  + Useful prelimary view
+* Decision tree models
+  + Shows the structure of the relation between the other variables
+```{r}
+theCorrelationMatrix = corr(myData)
+corrplot(corr=theCorrelationMatrix, method = "ellipse")
+```
+Tree modeling:
+```{r}
+tree_model = rpart(var2Predict ~ ., data = myData)
+```
+* Careful with this var2predict is the variable you are trying to pre
+
+##Graphics Parameters
+* Par is a global graphics parameter so 'par(pch = 16)' would change all future graphs to a closed circle from the default open one
+* Changing it locally just affects the one plot you are making
+
