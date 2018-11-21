@@ -83,4 +83,50 @@ tree_model = rpart(var2Predict ~ ., data = myData)
 ##Graphics Parameters
 * Par is a global graphics parameter so 'par(pch = 16)' would change all future graphs to a closed circle from the default open one
 * Changing it locally just affects the one plot you are making
+Let's break down a plot
+```{r}
+plot(xVar, yVar,type = "l", lty = 2, lwd = 3, col = "red")
+```
+Here we see the x variables plotted against the y variables
+* type "l" means a line graph
+  + "p" is points
+  + "s" is steps
+  + "o" is points overlaid a line
+* lty is line type and here specifies a dashed line
+* lwd specifies line width here it is 3 times the relatively larger than the default
+Lets add some more
+```{r}
+title("Hello graph")
+text( xVar, yVar, labels = "Yes", cex = 1.2, col = "blue", adj = 0)
+```
+* title adds a title to the graph
+* text() at every xy value
+  + labels places the label "Yes"
+  + cex makes the text 20% larger
+  + col makes the colour blue
+  + adj = 0 left adjusts the text
+*axis() adds an axis at the specified side
+  + 1 is below(x-axis), 2 is left (y-axis), 3 is above, and 4 is right
+* supsmu() makes a trend line from given x and y values
 
+##Multiple Graphs
+```{r}
+matplot(var$y, var[,c("x1","x2","x3")])
+```
+This makes a matrix of plots that plot the variable y vs x1 in one graph then y vs x2 in another and so on and so on
+
+layout()
+* This function basically uses a similar idea as the last but not all graphs have to be the same size.
+* The size of each graph is determined by the layout matrix
+* 
+layout.show(n=3)
+* This will show you what your layout will look like in a GUI.
+* n is the number of graphs that will be shown ie the layout specified might allow for up to 6 graphs but `layout.show(n=3)` would only specify the first 3
+
+##Creating and saving more complex plots
+symbols(xVar, yVar, circles = zVar)
+* Allows you to show a third variable on a graph of two variables
+* If things are too big the argument inches set to a lower value will make things better
+Colors
+* Pick the colours you will used based Iliinsky and Steele and someone red, green, yellow, black, white and blue are preferable
+* Ideally 6 colours used, 12 is a still okay, but no more than 20

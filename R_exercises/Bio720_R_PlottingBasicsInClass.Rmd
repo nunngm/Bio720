@@ -39,6 +39,7 @@ To make things easier to look like, we are going to use a subset of just 300 obs
 So first I am making a random subset of the larger data set (just 300 of the rows randomly selected)
 ```{r}
 dll_data_subset <- dll_data[sample(nrow(dll_data), 300, replace = F),]
+dll_data_subset$temp = factor(dll_data_subset$temp)
 ```
 
 
@@ -83,7 +84,18 @@ Most of these parameters are easily explained.
 `main` is for the main title.
 
 ### Exercise
-
+```{r}
+plot(femur ~ tibia,
+     pch = 20, # symbol
+     cex = 1.2, # size of symbol
+     col = "red", # symbol colour
+     xlim = c(0.40, 0.57),
+     ylim = c(0.42, 0.62),
+     xlab = " tibia length",
+     ylab = "femur length",
+     main = "leg lengths measures",
+     data = dll_data)
+```
 1- Remake this plot but change the colour of characters to red.
  
 2- Remake this plot but but use triangles instead of circles for the characters.
