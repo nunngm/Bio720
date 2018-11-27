@@ -1,0 +1,65 @@
+---
+title: "Simulating Data"
+author: "Garrett Nunn"
+date: "November 26, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+set.seed(720)
+x = rnorm(1000, mean = 5, sd = 1)
+x = mean(x)
+sample(x)
+barplot(table(sample(1:6, size =6, replace = F)))
+x = c(rep("A",20), rep( "a",20))
+x = sample(x,size = 40, replace = T)
+pander = function(runs,x){
+  result = integer(runs)
+  for (i in 1:runs){
+    x = sample(x,size = 40, replace = T)
+    result[i] = table(x)[1]/(length(x))
+  }
+  return(result)
+}
+UrTheBest =pander(40,x)
+plot(UrTheBest, type = "l", xlab = "Generations", ylab = "Little a Freq") #I know there is a mistake because table turns into 1 column. It displeases me
+table(x)
+hist(runif(n = 10000, min =0, max = 1), freq = F)
+
+lazyName = rnorm(n = 100, mean =5, sd =2)
+par(mfrow= c(2,2))
+plot(lazyName)
+hist(lazyName)
+qqnorm(y =lazyName)
+howAreYouDrosopheeling = replicate(10, rnorm(n = 100, mean = 5, sd =2))
+par(mfrow=c(1,1))
+x = seq(2,20)
+b =0.7
+a =5
+y_fixed = a+b*x
+plot(y_fixed ~ x)
+plot(sim~x,type ="n",xlim = c(0,20), ylim = c(0,25))
+abline(a = 5, b =0.7, col ="red",lwd =3)
+makeLine = function(){
+  sim = rnorm(length(x), mean = y_fixed, sd = 2.5)
+  sim.lm = lm(sim~x)
+  #points(sim~x, pch=20)
+  abline(sim.lm, col ="blue", lty =2)
+}
+replicate(25,makeLine())
+
+backAgain = paste0(replicate(n = 100000,sample(c("a","c","t","g"),size =1, replace =T)),collapse = "")
+length(backAgain)
+
+iForgotTheFirstPartOfThatJoke =gregexpr("aactttt", backAgain, fixed = T, useBytes = T)
+#fixed =T and useBytes=T speed things up
+length(unlist(iForgotTheFirstPartOfThatJoke))
+probYes = c(0.3,0.2,0.3,0.2)
+backAgain = replicate(n = 100000,sample(c("a","c","t","g"),size =1, replace =T, prob =probYes))
+table(backAgain)/length(backAgain)
+backAgain = paste0(backAgain,collapse = "")
+```
