@@ -23,16 +23,21 @@ I have set up class access to [DataCamp](https://www.datacamp.com/groups/bio720)
 
 [R Assignment 2](./assignments/Bio720_R_Assignment2.md) - Due October 28th & 29th 2018 (see notes).
 
-[R Assignment 3](./assignments/Bio720_R_Assignment3.md) - Due November 5th before class.
+[R Assignment 3](./assignments/Bio720_R_Assignment3.md) - Due November 5th before class. Answers are [here](./assignments/Bio720_R_Assignment3_answers.md)
+
+[R Assignment 4](https://github.com/DworkinLab/Bio720/blob/master/assignments/Bio720_Assignment4.pdf) - Due December 3rd.
 
 ## In class activities
 1. In class R exercises on the introduction to `R` are [here](https://github.com/DworkinLab/Bio720/blob/master/R_exercises/R_ClassExercise_1_InClass.md). The [answers](./R_exercises/R_ClassExercise_1_answers.md) Please go through DataCamp courses (intro to R and intermediate R) screencasts 1 - 7 above first (or else it may not make much sense).
 
 2. (October 29th 2018) In class R_exercises for control flow in `R` (as well as the apply family of functions) are  [here](./R_exercises/Bio720_R_InClass_Control_flow_worked_example.Rmd), with [answers](./R_exercises/Bio720_R_InClass_Control_flow_worked_answers.md) and the second activity is [here](./R_exercises/Bio720_R_InClassExercise2.Rmd), with answers [here](./R_exercises/Bio720_R_InClassExercise2Answers.md).
 
-3. (November 5th 2018) In class exercise on data munging (using base `R`, not with the Wickham-verse libraries) is [here](./R_exercises/Bio720_R_week3_DataMungingInClass.Rmd).
+3. (November 5th 2018) In class exercise on data munging (using base `R`, not with the Wickham-verse libraries) is [here](./R_exercises/Bio720_R_week3_DataMungingInClass.Rmd) and answers [here](./R_exercises/Bio720_R_week3_DataMunging.md).
 
-4. (Not updated for 2018) In class exercises on the basics of plotting (using base `R` not `ggplot2` or `lattice`).
+4. (November 19th 2018) In class exercises on the basics of plotting (using base `R` not `ggplot2` or `lattice`). [Basic ideas](./R_exercises/Bio720_R_PlottingBasicsInClass.Rmd), and the full code [here](./R_exercises/Bio720_R_PlottingBasics.md) The anatomy of a more advanced example is [here](./R_exercises/AdvancedBasePlotting_CI_Bands.md).
+We also introduced some basic concepts about simulations, and went through a simple deterministic example which is [here](./R_exercises/Bio720_SimulatingData_Part1.md). Note that the equations will not display, so download either the [PDF](./R_exercises/Bio720_SimulatingData_Part1.pdf) or [html](./R_exercises/Bio720_SimulatingData_Part1.html) version.  You may also find [this book](https://link.springer.com/book/10.1007%2F978-0-387-89882-7) helpful. McMaster has free access to it.
+
+5. (November 20th and 27th 2018). Deterministic and stochastic simulations. markdown is [here](./R_exercises/Bio720_SimulatingData.md), but the [PDF](./R_exercises/Bio720_SimulatingData.pdf) may be easier for the equations. Or download the[.Rmd](./R_exercises/Bio720_SimulatingData.Rmd) and run it yourself.
 
 ## other R video tutorials and exercises.
 The data set that is used for some of these activities can be found on the [DRYAD Digital repository](http://datadryad.org/) right [here](http://datadryad.org/bitstream/handle/10255/dryad.8377/dll.csv?sequence=1). You can also set this up (so you do not need a local copy of the data by putting this command in your script or copying and pasting it into the R editor :
