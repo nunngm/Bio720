@@ -16,16 +16,23 @@ x = mean(x)
 sample(x)
 barplot(table(sample(1:6, size =6, replace = F)))
 x = c(rep("A",20), rep( "a",20))
-x = sample(x,size = 40, replace = T)
-pander = function(runs,x){
+# x = sample(x,size = 40, replace = T)
+
+pander = function(runs,pop){
   result = integer(runs)
   for (i in 1:runs){
-    x = sample(x,size = 40, replace = T)
-    result[i] = table(x)[1]/(length(x))
+    pop = sample(x,size = 40, replace = T)
+    y = table(pop)[1]/(length(pop))
+   
+    if (names(y)=="a"){
+      result[i] = y
+    } else{
+      result[i] = 0
+    }
   }
   return(result)
 }
-UrTheBest =pander(40,x)
+UrTheBest =pander(100,x)
 plot(UrTheBest, type = "l", xlab = "Generations", ylab = "Little a Freq") #I know there is a mistake because table turns into 1 column. It displeases me
 table(x)
 hist(runif(n = 10000, min =0, max = 1), freq = F)
