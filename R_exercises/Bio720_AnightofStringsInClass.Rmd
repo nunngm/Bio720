@@ -23,6 +23,8 @@ You will want to install *stringi*, *stringr* and *tidytext*
 
 ```{r}
 install.packages("tidytext")
+install.packages("stringr")
+install.packages("stringi")
 ```
 
 ```{r}
@@ -47,7 +49,7 @@ writeLines(fly_seq)
 ```
 
 How might you get `writeLines` to print each string on a newline?
-
+Using the character '\n' forces a new ling
 
 ## Joining strings together
 
@@ -55,6 +57,9 @@ We already saw this a bit last week with `paste()` and `paste0`. Default argumen
 
 
 Make a single string that looks like "x1 + x2 + x3 + x4 + x5" using `paste` or for stringi it is `stri_join()` and `str_c` in *stringr*
+```{r}
+paste("x",1:5, sep = "", collapse = " + ")
+```
 
 
 # How long is your string?
@@ -68,10 +73,13 @@ seq_gen <- function() {
    paste0(x, collapse="")    
 }
 seqs <- replicate(20, seq_gen())
+nchar(seqs)
+length(seqs)
+str_length(seqs)
 ```
 
 I have created an object of DNA sequences called "seqs" how long is each sequence? How many sequences are there? `nchar()` in base, and `str_length()`
-
+See above
 
 
 ## Words in the origin of species
@@ -120,7 +128,7 @@ books$title[1]
 The first one should be the 1st edition, let's download that. The first number is the gutenberg id that we need to use
 
 ```{r}
-species <- gutenberg_download
+species <- gutenberg_download(1228)
 str(species)
 head(species$text)
 
@@ -132,12 +140,17 @@ species_text <- species$text
 We want to clean things up so we can do some word searches in the text. Removing, preface, TOC, index etc...
 
 How many lines are empty, check using the `stri_isempty`. What proportion of lines is this?
-
+```{r}
+sum(stri_isempty(species_text))
+```
 
 ## removing the introduction
 
 How often does the word introduction appear? Use `grep` or `str_subset`
-
+```{r}
+length(grep("INTRODUCTION",species_text,ignore.case = F))
+hello =species[grep("introduction",species_text, ignore.case = T),]
+```
 
 How would you check the lines?
 
@@ -164,7 +177,7 @@ grep("^[0-9]+\\.", species_slice$text, value=TRUE)
 
 ## removing blank lines etc...
 
-Use nzchar (which returns FALSE is the string is empty) to find empty lines
+Use nzchar (which returns FALSE if the string is empty) to find empty lines
 
 ```{r}
 length(species_slice$text)
@@ -174,15 +187,12 @@ sum(nzchar(species_slice$text))
 We can filter on those lines. Fill in the missing parts.
 
 ```{r}
-___ <- ___ %>%
-  ___(grep("^INTRODUCTION\\.", text):(grep("^INDEX\\.", text))-1) %>%
-  ___(nzchar(text)) %>%
-  mutate(linenumber = row_number(),
+species_filtered <- species %>%
+  slice(grep("^INTRODUCTION\\.", text):(grep("^INDEX\\.", text))-1) %>%
+  subset(nzchar(text)) %>%
+  mutate(linenumber = row_number(sum(nzchar(species_slice$text))),
          chapter = cumsum(grepl("^[0-9]+\\.", text)))
 ```
-
-
-
 
 
 ## tidytext
@@ -202,13 +212,18 @@ species_tidy <- species_tidy %>%
 
 ## Find the most common words in the book? 
 You can use the count function in dplyr, and examine the top n
-
+```{r}
+wordCount = species_tidy %>%
+    count(word, sort=T)
+```
 
 
 ## How about a word cloud of the top 50 words
+wordCloud(wordCount)
 
 ```{r}
 library(wordcloud) # may need to install.
+wordcloud(words = wordCount$word, freq= wordCount$n,min.freq = 1, max.words = 50, random.order = F, rot.per = 0.3,colors=brewer.pal(8, "Dark2"))
 ```
 
 

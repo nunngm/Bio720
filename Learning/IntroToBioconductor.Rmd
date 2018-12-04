@@ -1,0 +1,35 @@
+---
+title: "Bioconductor Notes"
+author: "Garrett Nunn"
+date: "December 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+There are many good tools in bioconductor to manipulate strints
+* `reverse()` Takes a sting and reverses it
+* `complement()` Takes a sting and takes the complement of it
+* `reverseComplement` Takes a sting and outputs the reverse complement
+
+# Reading fasta/q files
+`seq = sread(x)` reads sequences from fastq files
+`qual = quality(x)` just outputs the quality of the bases across a sample
+`pq = PhredQuality(qual)` outputs the phred score across the bases
+`qs = as(pq,"IntegerList")` outputs the observed Phred scores into numeric number so that everything is much much easier to read 
+* Quality Assessment
+  +`qa(fqsample, lanes 1)   #optional lane`
+* To check for duplicates use the function 
+  +`table(srduplicated(dfqsample))`
+  + use `dfqsample = dfqsample[srduplicated(dfqsample)==F]` to clean the reads of any duplicates
+* To filter reads to a certain
+  + `readsWidthCutOff = srFilter(function(x){width(x)>= minWidth},name = "MinWidth")`
+  + then run it `fqsample[readWidthCutOFf(fqsample)]`
+* Filters
+  + `myFilterPolyA = polynFilter(threshold = 10, nuc = c("A"))`
+    + This is a filter that will return sequences that have a maximum of 10 consecutive A's
+
+
+
+

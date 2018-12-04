@@ -1,0 +1,152 @@
+---
+title: "Assignment4"
+author: "Garrett Nunn"
+date: "December 4, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Question 2:
+```{r}
+set.seed(69)
+
+x = c(rep("A",20), rep( "a",20))
+pander = function(gen,p,q=1-p,w_AA,w_Aa,w_aa){
+  result = integer(gen+1)
+  result[1] = p
+  for (i in 1:gen){
+    wBar = (p^2)*w_AA+(2*p*q*w_Aa)+(q^2)*w_aa
+    p = (p*p*w_AA/wBar)+(p*q*w_Aa/wBar)
+    result[i+1]=p
+  }
+  if (p==1|p==0){
+    print("It Fixed")
+  }else{
+    print("No fixation for you")
+  }
+  return(result)
+  
+}
+UrTheBest =pander(100,0.95,0.5,1,0.01,0.01)
+plot(UrTheBest, type = "l", xlab = "Generations", ylab = "Little a Freq")
+```
+## Question 3:
+```{r}
+
+genDriftSim = function(popSize,p,gen){
+  y = c("A","a")
+  pop = sample(y, size = popSize*2, replace =T, prob= c(p, 1-p))
+  result = integer(gen+1)
+  result[1]= p
+  for (i in 1:gen){
+    pop = sample(pop,size = popSize*2, replace = T)
+    y = table(pop)[1]/(length(pop))
+    if (names(y)=="a"){
+      result[i+1] = 1-y
+    } else{
+      result[i+1] = 1
+    }
+  }
+  plot(result, type = "l", xlab = "Generations", ylab = "p Frequency", ylim=c(0,1))
+  return(result)
+}
+bestProfEver =genDriftSim(100,0.9,100)
+
+```
+## Question 4 and 5:
+__I accidentally did both question 4 and 5 at the same time as I thought that was what you were looking for. I would recommend not running 1000 runs as it might chug your computer (but it works!).__
+```{r}
+
+genDriftSim = function(popSize,p,gen,colorMe =1){
+  y = c("A","a")
+  pop = sample(y, size = popSize*2, replace =T, prob= c(p, 1-p))
+  result = integer(gen+1)
+  result[1]= p
+  for (i in 1:gen){
+    pop = sample(pop,size = popSize*2, replace = T)
+    y = table(pop)[1]/(length(pop))
+    if (names(y)=="a"){
+      result[i+1] = 1-y
+    } else{
+      result[i+1] = 1
+    }
+  }
+  lines(result, col=colorMe)
+  return(result[gen+1]==0)
+}
+library(randomcoloR)
+
+wrapper = function(p,gen,popSize,n){
+    palette <- distinctColorPalette(n)
+    plot(0,0,type = "n", xlab = "Generations", ylab = "p Frequency", ylim=c(0,1),xlim =c(0,gen))
+    x=0
+    for(i in 1:n){
+      x = x+genDriftSim(popSize,p,gen,palette[i])
+    }
+    paste("Proportion lost:",x/n)
+    
+  }
+wrapper(0.1,100,200,100)
+```
+## Question 6:
+```{r}
+simpPA = function(int,slope,ss,rse){
+  x <- seq(from =1, to = 10, length.out = ss) # length.out is how many observations we will have
+  a <- int # intercept
+  b <- slope # slope
+  y_deterministic <- a + b*x
+  
+  y_simulated <- rnorm(length(x), mean = y_deterministic, sd = rse)
+  mod_sim <- lm(y_simulated ~ x)
+  p_val_slope <- summary(mod_sim)$coef[2,4] # extracts the p-value
+  p_val_slope
+}
+simpPA(0.5,0.1,20,2)
+```
+To check this code I would set the seed and run both codes to ensure they result in the same p-value additionally I could plot both sets of points and check they are identical
+```{r}
+x= integer(1000)
+for (i in 1:1000){
+  x[i]= simpPA(0.5,0.1,20,2)
+}
+hist(x)
+sum(x<0.05)/1000 #proportrion of p values less than 0.05
+
+y= integer(1000)
+for (i in 1:1000){
+  y[i]= simpPA(0.5,0.9,20,2)
+}
+hist(y)
+sum(y<0.05)/1000
+```
+The proportion of p-values less than 0.05 goes down when the slope is reduced to 0. I think that this is because the points are essentially random and there is no correlation between y values and x values at all. While when the slope is steeper there is a stronger correlation between y and x values. This then causes the comparison to be significant.
+```{r}
+
+  result=integer(19)
+  for(z in 2:20){
+    x= integer(1000)
+    for (i in 1:1000){
+      x[i]= simpPA(0.5,0.1,z*5,1.5)
+    }
+    result[z-1]=sum(x<0.05)/length(x)
+  }
+  result
+```
+The larger the sample size the higher proportion of runs that have a p-value less than x. This makes sense as our generated data does have a correlation with x that's value to defined by se and by increasing resolution (sample size) we are able to see more results that correlate with this. This is great up to a point when you are working with very very large data sets then there will be a ton of "significant" results when it could be just due to random chance.
+
+##Extra: Fun Time Analysis :P
+
+*This is a side thing I have constantly running for everything to make sure I am making best use of my time (as long as I actually analyze the data on phone)*
+
+I spent ~ 3.5 hours on data camp 
+* I was not going as fast as I could of as I let distractions get the better of me too often
+
+I spent 2.5h on the questions
+* This was highly effective time spent
+* Question 6 took definitely the longest at around 40 minutes to parse through
