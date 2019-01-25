@@ -25,7 +25,7 @@ I have set up class access to [DataCamp](https://www.datacamp.com/groups/bio720)
 
 [R Assignment 3](./assignments/Bio720_R_Assignment3.md) - Due November 5th before class. Answers are [here](./assignments/Bio720_R_Assignment3_answers.md)
 
-[R Assignment 4](https://github.com/DworkinLab/Bio720/blob/master/assignments/Bio720_Assignment4.pdf) - Due December 3rd.
+[R Assignment 4](https://github.com/DworkinLab/Bio720/blob/master/assignments/Bio720_Assignment4.pdf) - Due December 3rd. Answers are [here as a .Rmd](./assignments/Bio720_Assignment4_answers.Rmd) or as a [pdf](./assignments/Bio720_Assignment4_answers.pdf)
 
 ## In class activities
 1. In class R exercises on the introduction to `R` are [here](https://github.com/DworkinLab/Bio720/blob/master/R_exercises/R_ClassExercise_1_InClass.md). The [answers](./R_exercises/R_ClassExercise_1_answers.md) Please go through DataCamp courses (intro to R and intermediate R) screencasts 1 - 7 above first (or else it may not make much sense).
@@ -39,7 +39,7 @@ We also introduced some basic concepts about simulations, and went through a sim
 
 5. (November 20th and 27th 2018). Deterministic and stochastic simulations. markdown is [here](./R_exercises/Bio720_SimulatingData.md), but the [PDF](./R_exercises/Bio720_SimulatingData.pdf) may be easier for the equations. Or download the[.Rmd](./R_exercises/Bio720_SimulatingData.Rmd) and run it yourself.
 
-6. Dec 2nnd [here](./R_exercises/Bio720_AnightofStringsInClass.Rmd)
+6. (Dec 2nd) String exercise [here](./R_exercises/Bio720_AnightofStringsInClass.Rmd) and answers [here](./R_exercises/Bio720_AnightofStrings.Rmd)
 
 ## other R video tutorials and exercises.
 The data set that is used for some of these activities can be found on the [DRYAD Digital repository](http://datadryad.org/) right [here](http://datadryad.org/bitstream/handle/10255/dryad.8377/dll.csv?sequence=1). You can also set this up (so you do not need a local copy of the data by putting this command in your script or copying and pasting it into the R editor :
