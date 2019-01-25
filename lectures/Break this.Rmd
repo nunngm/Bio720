@@ -1,0 +1,22 @@
+---
+title: "Last Class"
+author: "Garrett Nunn"
+date: "December 10, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+ratios = function(x,y){
+  x = as.numeric(x)
+  y = as.numeric(y)
+  if (any(y == 0)) {warning("You sure you want to divide by 0?")} 
+  if (length(x) == 0 | length(y) == 0) {stop("are not long enough for a ratio")}
+  if(length(x)>(y)){stop("Longer x variable than y variable")}
+  result = x/y
+  return(result)
+}
+```
