@@ -46,7 +46,7 @@ The data we are working with today is in
 So navigate your way to there. take a look at the files using `ls`
 
 Go to the `rawReads` directory
-
+The first thing you should do is run a checksum on MD5 or MD5sums to make sure everything was downloaded
 Question 1: How many files are in this directory? 
 Question 2: What kind of files are these? 
 Question 3: How many lines are there per distinct read in this file type?
