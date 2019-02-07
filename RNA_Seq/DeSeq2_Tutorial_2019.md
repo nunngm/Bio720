@@ -16,7 +16,11 @@ output:
 
 ## Background
 In this tutorial I will provide a basic overview of differential expression analysis for transcriptional profiling using RNA-Seq data. We will be using the [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) library in R. This approach utilizes a variant on the assumption of a negative binomially set of counts. This approach assumes that all you have going in are counts, that have not been normalized either for library size (or number of mapped reads), not for transcript length.
-
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("DESeq2", version = "3.8")
+```
 Instead of running these analyses on info, we'll run this locally on our own computers. Before you begin, you will need to download all of the count files we generated using Salmon. Rob Patro and the author of DESeq2 (Mike Love) have developed some nice import tools to get everything into `R` relatively efficiently. However, you will need to use a very recent version of `R` to use these functions.
 
 ## Install DeSeq2
