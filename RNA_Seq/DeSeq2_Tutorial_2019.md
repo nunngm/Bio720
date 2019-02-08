@@ -147,7 +147,7 @@ The folder that contains all of the sub-folders with the quantifications should 
 
 
 ```r
-#setwd("../data/salmon_counts")
+setwd("C:/Users/garre/Documents/MobaXterm/home/")
 # This will differ for you!!!
 setwd("~/TeachingAndLectures/Bio722/Bio722_2019/salmon_counts/")
 # Setting it up for the import (this is not the import itself)
@@ -372,7 +372,7 @@ dim(for_pca)
 ```r
 plotPCA(for_pca, 
         intgroup=c("lane"),
-        ntop = 2000) 
+        ntop = 10) 
 ```
 
 The `plotPCA()` function is actually just a wrapper for one of the built in functions for performing a principle components analysis. The goal of this (without getting into the details for the moment) is to find statistically independent (orthogonal) axes of overall variation. PC1 accounts for the greatest amount of overall variation among samples, PC2 is statistically independent of PC1 and accounts for the second largest amount of variation. By default the `plotPCA` function only plots the first couple of Principle components. In this case it explains just under 80% of all of the variation among the samples. However, I highly recommend looking at the plots for higher PCs as well, as sometimes there is something going on, even if it only accounts for a few % of variation.
@@ -403,7 +403,7 @@ We can quickly take a look to see if this pattern shows anything interesting for
 
 
 ```r
-plotPCA(for_pca, ntop = 1000,
+plotPCA(for_pca, ntop = 2000,
         intgroup=c("tissue", "food", "temperature"))
 
 plotPCA(for_pca, ntop = 500,
